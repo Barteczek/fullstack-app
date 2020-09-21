@@ -14,13 +14,13 @@ import { NotFound } from '../NotFound/NotFound';
 class Component  extends React.Component {
   constructor(props){
     super(props);
-    const {id, title, price, description} = this.props.post;
+    const {id, title, price, text} = this.props.post;
 
     this.state = {
       id: id,
       title: title,
       price: price,
-      description: description,
+      text: text,
     };
   }
 
@@ -36,8 +36,8 @@ class Component  extends React.Component {
   }
 
   componentDidMount() {
-    const {title, price, description} = this.props.post;
-    this.setState({title: title, price: price, description: description});
+    const {title, price, text} = this.props.post;
+    this.setState({title: title, price: price, text: text});
   }
 
   render() {
@@ -57,8 +57,8 @@ class Component  extends React.Component {
               <input type="number" className="form-control" id="price" value={this.state.price} onChange={this.handleChange} />
             </div>
             <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea className="form-control" id="description" rows="6" value={this.state.description} onChange={this.handleChange} />
+              <label htmlFor="text">Text</label>
+              <textarea className="form-control" id="text" rows="6" value={this.state.text} onChange={this.handleChange} />
             </div>
             <button type="submit" className="btn btn-primary" onClick={this.handleSubmit}>Save</button>
           </form>: 

@@ -20,7 +20,7 @@ class Component  extends React.Component {
       id: uid(),
       title: '',
       price: 0,
-      description: '',
+      text: '',
       author: 'author name',
     };
   }
@@ -53,8 +53,8 @@ class Component  extends React.Component {
               <input type="number" className="form-control" id="price" value={this.state.price} onChange={this.handleChange} />
             </div>
             <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea className="form-control" id="description" rows="6" value={this.state.description} onChange={this.handleChange} />
+              <label htmlFor="text">Text</label>
+              <textarea className="form-control" id="text" rows="6" value={this.state.text} onChange={this.handleChange} />
             </div>
             <button type="submit" className="btn btn-primary" onClick={this.handleSubmit}>Save</button>
           </form>: 

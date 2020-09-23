@@ -7,21 +7,18 @@ import { connect } from 'react-redux';
 import { isAdmin } from '../../../redux/userRedux.js';
 
 import styles from './PostEdit.module.scss';
-import { getPost, changePost } from '../../../redux/postsRedux.js';
+import { getAll, changePost, fetchPostById } from '../../../redux/postsRedux.js';
 
 import { NotFound } from '../NotFound/NotFound';
 
 class Component  extends React.Component {
-  constructor(props){
-    super(props);
-    const {id, title, price, text} = this.props.post;
 
-    this.state = {
-      id: id,
-      title: title,
-      price: price,
-      text: text,
-    };
+  initState = () => {
+    const { post } = this.props;
+    if (post) {
+      const {title, price, text} = post;
+      this.setState({title: title, price: price, text: text});
+    }
   }
 
   handleChange = (event) => {
@@ -35,18 +32,20 @@ class Component  extends React.Component {
     changePost(this.state);
   }
 
-  componentDidMount() {
-    const {title, price, text} = this.props.post;
-    this.setState({title: title, price: price, text: text});
+  async componentDidMount() {
+    const { fetchPostById, id } = this.props;
+    await fetchPostById(id);
+    
+    this.initState();
   }
 
   render() {
 
-    const { className, children, isAdmin } = this.props;
+    const { className, children, isAdmin, post } = this.props;
     
     return(
       <div className={clsx('container', className, styles.root)}>
-        {isAdmin ? 
+        {post && isAdmin ? 
           <form>
             <div className="form-group">
               <label htmlFor="title">Title</label>
@@ -54,7 +53,7 @@ class Component  extends React.Component {
             </div>
             <div className="form-group">
               <label htmlFor="price">Price</label>
-              <input type="number" className="form-control" id="price" value={this.state.price} onChange={this.handleChange} />
+              <input type="text" className="form-control" id="price" value={this.state.price} onChange={this.handleChange} />
             </div>
             <div className="form-group">
               <label htmlFor="text">Text</label>
@@ -76,15 +75,19 @@ Component.propTypes = {
   isAdmin: PropTypes.bool,
   post: PropTypes.object,
   changePost: PropTypes.func,
+  fetchPostById: PropTypes.func,
+  id: PropTypes.string,
 };
 
 const mapStateToProps = (state, ownProps) => ({
   isAdmin: isAdmin(state), 
-  post: getPost(state, ownProps.match.params.id),
+  id: ownProps.match.params.id,
+  post: getAll(state),
 });
 
 const mapDispatchToProps = dispatch => ({
   changePost: data => dispatch(changePost(data)),
+  fetchPostById: id => dispatch(fetchPostById(id)),
 });
 
 const Container = connect(mapStateToProps, mapDispatchToProps)(Component);

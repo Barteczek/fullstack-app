@@ -7,46 +7,64 @@ import { connect } from 'react-redux';
 import { isAdmin } from '../../../redux/userRedux.js';
 
 import styles from './Post.module.scss';
-import { getPost } from '../../../redux/postsRedux.js';
+import { getAll, fetchPostById } from '../../../redux/postsRedux.js';
 
-const Component = ({className, children, post, isAdmin}) => {
-  
-  const {title, id, description, price} = post;
-  return(
-    <div className={clsx('container', className, styles.root)}>
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">{title}</h5>
-          <h6 className="card-subtitle mb-2 text-muted">${price}</h6>
-          <p className="card-text">{description}</p>
-          {isAdmin ? 
-            <a className="btn btn-secondary" href={`/post/${id}/edit`} role="button">Edit</a> : 
-            null
-          }
+
+class Component  extends React.Component {
+
+  componentDidMount() {
+    const { fetchPostById, id} = this.props;
+    fetchPostById(id);
+  }
+
+  render() {
+    const { className, children, isAdmin, id, post } = this.props;
+
+    return(
+    
+      <div className={clsx('container', className, styles.root)}>
+        <div className="card">
+          <div className="card-body">
+            { post ?
+              <div>
+                <h5 className="card-title">{post.title}</h5>
+                <h6 className="card-subtitle mb-2 text-muted">${post.price}</h6>
+                <p className="card-text">{post.text}</p>
+              </div> :
+              null
+            }
+            {isAdmin ? 
+              <a className="btn btn-secondary" href={`/post/${id}/edit`} role="button">Edit</a> : 
+              null
+            }
+          </div>
         </div>
+        {children}
       </div>
-      {children}
-    </div>
-  );
-};
+    );
+  }
+}
   
 Component.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   isAdmin: PropTypes.bool,
-  post: PropTypes.object,
+  post: PropTypes.any,
+  fetchPostById: PropTypes.func,
+  id: PropTypes.string,
 };
 
 const mapStateToProps = (state, ownProps) => ({
   isAdmin: isAdmin(state), 
-  post: getPost(state, ownProps.match.params.id),
+  id: ownProps.match.params.id,
+  post: getAll(state),
 });
 
-// const mapDispatchToProps = dispatch => ({
-//   someAction: arg => dispatch(reduxActionCreator(arg)),
-// });
+const mapDispatchToProps = dispatch => ({
+  fetchPostById: id => dispatch(fetchPostById(id)),
+});
 
-const Container = connect(mapStateToProps)(Component);
+const Container = connect(mapStateToProps, mapDispatchToProps)(Component);
 
 export {
   // Component as Post,

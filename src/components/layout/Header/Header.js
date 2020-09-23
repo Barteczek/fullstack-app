@@ -9,8 +9,25 @@ import { getAuthorisation, setAuthorisation } from '../../../redux/userRedux.js'
 import styles from './Header.module.scss';
 
 class Component  extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      user: 'guest',
+    };
+  }
+  
+
+  // initState = () => {
+  //   const { post } = this.props;
+  //   if (post) {
+  //     const {title, price, text} = post;
+  //     this.setState({title: title, price: price, text: text});
+  //   }
+  // }
 
   handleChange = event => {
+    this.setState({user: event.target.value});
     this.props.setUser(event.target.value);
   };
 
@@ -26,7 +43,7 @@ class Component  extends React.Component {
         <div className='container'>
           <div className='row'>
             <div className='col-sm'>
-              <select className='btn btn-secondary dropdown-toggle' value={this.userRights} onChange={this.handleChange}>
+              <select className='btn btn-secondary dropdown-toggle' value={this.state.user} onChange={this.handleChange}>
                 <option value='guest'>Guest</option>
                 <option value='user'>User</option>
                 <option value='admin'>Admin</option>

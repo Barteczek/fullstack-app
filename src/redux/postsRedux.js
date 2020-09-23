@@ -1,8 +1,8 @@
-import Axios from 'axios';
+import axios from 'axios';
 
 /* selectors */
 export const getAll = ({posts}) => posts.data;
-export const getPost = ({posts}, id) => !typeof(posts) === undefined ? posts.data.find(post => post.id === id) : null;
+export const getPost = ({posts}, id) => posts.data.find(post => post._id === id);
 
 /* action name creator */
 const reducerName = 'posts';
@@ -24,19 +24,49 @@ export const addPost = payload => ({ payload, type: ADD_POST });
 
 /* thunk creators */
 export const fetchPublished = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch(fetchStarted());
     const state = getState();
-    if(!state.posts.data && state.posts.loading.active === true){
-      Axios
-        .get('http://localhost:8000/api/posts')
-        .then(res => {
-          dispatch(fetchSuccess(res.data));
-        })
-        .catch(err => {
-          dispatch(fetchError(err.message || true));
-        });
-    } 
+
+    if(!state.posts.data && state.posts.loading.active === true) {
+      try {
+        let res = await axios.get('http://localhost:8000/api/posts');
+        dispatch(fetchSuccess(res.data));
+      }
+      catch(err) {
+        dispatch(fetchError(err.message || true));
+      }
+    }
+  };
+};
+
+export const fetchPostById = (id) => {
+  return async dispatch => {
+    dispatch(fetchStarted());
+
+    try {
+      let res = await axios.get(`http://localhost:8000/api/posts/${id}`);
+
+      dispatch(fetchSuccess(res.data));
+    }
+    catch(err) {
+      dispatch(fetchError(err.message || true));
+    }
+  };
+};
+
+export const addPostRequest = (post) => {
+  return async dispatch => {
+
+    dispatch(fetchStarted());
+    try {
+      let res = await axios.post('http://localhost:8000/api/posts/add', post);
+      dispatch(addPost(res));
+      dispatch(fetchSuccess());
+
+    } catch(err) {
+      dispatch(fetchError(err.message || true));
+    }
   };
 };
 
@@ -75,7 +105,7 @@ export const reducer = (statePart = [], action = {}) => {
       const {id, title, price, description} = action.payload;
     
       const newState = {...statePart};
-      const index = newState.data.findIndex(post => post.id === id);
+      const index = newState.data.findIndex(post => post._id === id);
       
       newState.data[index].title = title;
       newState.data[index].price = price;

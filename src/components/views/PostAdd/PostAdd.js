@@ -2,13 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import clsx from 'clsx';
-import uid from 'uid';
 
 import { connect } from 'react-redux';
 import { getAuthorisation } from '../../../redux/userRedux.js';
 
 import styles from './PostAdd.module.scss';
-import { addPost } from '../../../redux/postsRedux.js';
+import { addPostRequest } from '../../../redux/postsRedux.js';
 
 import { NotFound } from '../NotFound/NotFound';
 
@@ -17,7 +16,6 @@ class Component  extends React.Component {
     super(props);
 
     this.state = {
-      id: uid(),
       title: '',
       price: 0,
       text: '',
@@ -31,8 +29,8 @@ class Component  extends React.Component {
   };
 
   handleSubmit = (event) => {
-    const {addPost} = this.props;
     event.preventDefault();
+    const {addPost} = this.props;
     addPost(this.state);
   }
 
@@ -79,7 +77,7 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  addPost: data => dispatch(addPost(data)),
+  addPost: data => dispatch(addPostRequest(data)),
 });
 
 const Container = connect(mapStateToProps, mapDispatchToProps)(Component);
